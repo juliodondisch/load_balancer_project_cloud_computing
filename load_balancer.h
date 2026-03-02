@@ -37,6 +37,9 @@ public:
     /// @brief returns the current pending queue size
     int queueSize() const;
 
+    /// @brief logs the starting queue size and task time range after the initial fill
+    void logStartup(int min_time, int max_time);
+
 private:
     char job_type;             ///< 'P' or 'S', the job type this lb handles
     queue<Request> pending;    ///< queue of requests waiting for a server

@@ -14,10 +14,16 @@ HighLevelLoadBalancer::HighLevelLoadBalancer(int p_servers, int s_servers, int c
     s_lb = new LoadBalancer('S', s_servers, cooldown_n);
 }
 
-/// @brief deletes both load balancers
+/// @brief deletes both load balancers then appends firewall count to each log file
 HighLevelLoadBalancer::~HighLevelLoadBalancer() {
     delete p_lb;
     delete s_lb;
+    ofstream plog("lb_log_P.txt", ios::app);
+    plog << "total requests blocked by firewall: " << total_blocked << "\n";
+    plog.close();
+    ofstream slog("lb_log_S.txt", ios::app);
+    slog << "total requests blocked by firewall: " << total_blocked << "\n";
+    slog.close();
 }
 
 /// @brief checks the request against the firewall then forwards it to the correct load balancer
@@ -41,6 +47,12 @@ void HighLevelLoadBalancer::routeRequest(Request r) {
 void HighLevelLoadBalancer::tick() {
     p_lb->tick();
     s_lb->tick();
+}
+
+/// @brief calls logStartup on both load balancers with the given time range
+void HighLevelLoadBalancer::logStartup(int min_time, int max_time) {
+    p_lb->logStartup(min_time, max_time);
+    s_lb->logStartup(min_time, max_time);
 }
 
 /// @brief prints firewall stats and the summary for each load balancer

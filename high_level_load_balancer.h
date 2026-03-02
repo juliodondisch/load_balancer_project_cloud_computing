@@ -29,6 +29,9 @@ public:
     /// @brief prints a combined summary of both load balancers to stdout
     void printSummary();
 
+    /// @brief logs startup info for both load balancers after the initial queue fill
+    void logStartup(int min_time, int max_time);
+
 private:
     LoadBalancer* p_lb;          ///< load balancer that handles processing jobs
     LoadBalancer* s_lb;          ///< load balancer that handles streaming jobs

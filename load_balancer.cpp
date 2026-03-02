@@ -27,10 +27,17 @@ LoadBalancer::LoadBalancer(char type, int initial_servers, int cooldown_n)
 
 /// @brief writes the summary to the log file and frees all server memory
 LoadBalancer::~LoadBalancer() {
-    log_file << "\n--- summary ---\n";
+    int active = 0, idle = 0;
+    for (WebServer* s : servers) {
+        if (!s->isFree()) active++;
+        else idle++;
+    }
+    log_file << "\n--- summary [lb-" << job_type << "] ---\n";
     log_file << "total requests processed: " << total_processed << "\n";
     log_file << "min servers used: " << min_servers_seen << "\n";
     log_file << "max servers used: " << max_servers_seen << "\n";
+    log_file << "active servers at end: " << active << "\n";
+    log_file << "idle servers at end: " << idle << "\n";
     log_file << "final queue size: " << pending.size() << "\n";
     log_file << "total clock cycles run: " << clock << "\n";
     log_file.close();
@@ -118,10 +125,10 @@ void LoadBalancer::removeServer() {
     }
 }
 
-/// @brief writes a timestamped message to the log file
+/// @brief writes a message prefixed with the lb type to the log file
 void LoadBalancer::log(const string& msg) {
     if (log_file.is_open()) {
-        log_file << msg << "\n";
+        log_file << "[lb-" << job_type << "] " << msg << "\n";
     }
 }
 
@@ -138,6 +145,16 @@ int LoadBalancer::serverCount() const {
 /// @brief returns the number of requests currently waiting in the queue
 int LoadBalancer::queueSize() const {
     return (int)pending.size();
+}
+
+/// @brief logs starting queue size, task time range, and config used
+void LoadBalancer::logStartup(int min_time, int max_time) {
+    log("--- load balancer [" + string(1, job_type) + "] startup info ---");
+    log("starting queue size: " + to_string(pending.size()));
+    log("task time range: " + to_string(min_time) + "-" + to_string(max_time) + " cycles");
+    log("initial servers: " + to_string(servers.size()));
+    log("cooldown period (n): " + to_string(cooldown_period) + " cycles");
+    log("---");
 }
 
 /// @brief prints a formatted summary of this load balancers run to stdout

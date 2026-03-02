@@ -1,0 +1,36 @@
+=== startup ===
+[lb-P] load balancer [P] started with 5 servers
+[lb-S] load balancer [S] started with 5 servers
+
+=== summaries ===
+
+--- summary [lb-P] ---
+total requests processed: 3255
+min servers used: 2
+max servers used: 7
+active servers at end: 2
+idle servers at end: 0
+final queue size: 157
+total clock cycles run: 10000
+total requests blocked by firewall: 29
+
+
+--- summary [lb-S] ---
+total requests processed: 3436
+min servers used: 3
+max servers used: 6
+active servers at end: 3
+idle servers at end: 0
+final queue size: 203
+total clock cycles run: 10000
+total requests blocked by firewall: 29
+
+--- conjoined summary ---
+total requests processed: 6691 (lb-P: 3255, lb-S: 3436)
+min servers used:         lb-P: 2, lb-S: 3
+max servers used:         lb-P: 7, lb-S: 6
+active servers at end:    5 (lb-P: 2, lb-S: 3)
+idle servers at end:      0 (lb-P: 0, lb-S: 0)
+final queue size:         360 (lb-P: 157, lb-S: 203)
+clock cycles run:         10000
+total requests blocked by firewall: 29
