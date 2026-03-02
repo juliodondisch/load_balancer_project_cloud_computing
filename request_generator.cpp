@@ -5,7 +5,10 @@
 #include <cstdlib>
 #include <ctime>
 
-RequestGenerator::RequestGenerator() {
+using namespace std;
+
+RequestGenerator::RequestGenerator(int min_time, int max_time)
+    : min_time(min_time), max_time(max_time) {
     srand(time(0));
 }
 
@@ -18,23 +21,23 @@ Request RequestGenerator::generate() {
     return r;
 }
 
-std::vector<Request> RequestGenerator::generateBatch(int count) {
-    std::vector<Request> batch;
+vector<Request> RequestGenerator::generateBatch(int count) {
+    vector<Request> batch;
     for (int i = 0; i < count; i++) {
         batch.push_back(generate());
     }
     return batch;
 }
 
-std::string RequestGenerator::randomIP() {
-    return std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256);
+string RequestGenerator::randomIP() {
+    return to_string(rand() % 256) + "." +
+           to_string(rand() % 256) + "." +
+           to_string(rand() % 256) + "." +
+           to_string(rand() % 256);
 }
 
 int RequestGenerator::randomTime() {
-    return (rand() % 20) + 1;
+    return (rand() % (max_time - min_time + 1)) + min_time;
 }
 
 char RequestGenerator::randomJobType() {

@@ -11,7 +11,7 @@
 class WebServer {
 public:
     /// @brief constructs a web server with the given ip address
-    WebServer(std::string ip);
+    WebServer(string ip);
 
     /// @brief assigns a request to this server and marks it as busy
     void assignJob(Request r);
@@ -23,16 +23,16 @@ public:
     bool isFree() const;
 
     /// @brief returns the server ip address
-    std::string getIP() const;
+    string getIP() const;
 
     /// @brief returns the request currently being processed
     Request getCurrentRequest() const;
 
 private:
-    std::string ip;
-    bool busy;
-    int time_remaining;
-    Request current_request;
+    string ip;           ///< ip address of this server
+    bool busy;           ///< true if server is processing a request
+    int time_remaining;  ///< clock cycles left for the current request
+    Request current_request; ///< the request currently being processed
 };
 
 #endif

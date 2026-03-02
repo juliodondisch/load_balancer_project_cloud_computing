@@ -2,23 +2,26 @@
 /// @brief implements the loadbalancer class
 
 #include "load_balancer.h"
+#include "colors.h"
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+
+using namespace std;
 
 LoadBalancer::LoadBalancer(char type, int initial_servers, int cooldown_n)
     : job_type(type), clock(0), adjust_cooldown(0), cooldown_period(cooldown_n),
       total_processed(0), min_servers_seen(initial_servers), max_servers_seen(initial_servers) {
 
-    std::string filename = std::string("lb_log_") + type + ".txt";
+    string filename = string("lb_log_") + type + ".txt";
     log_file.open(filename);
 
     for (int i = 0; i < initial_servers; i++) {
         servers.push_back(new WebServer(randomIP()));
     }
 
-    log("load balancer [" + std::string(1, job_type) + "] started with " +
-        std::to_string(initial_servers) + " servers");
+    log("load balancer [" + string(1, job_type) + "] started with " +
+        to_string(initial_servers) + " servers");
 }
 
 LoadBalancer::~LoadBalancer() {
@@ -56,9 +59,9 @@ void LoadBalancer::assignJobs() {
             Request r = pending.front();
             pending.pop();
             s->assignJob(r);
-            log("[clock " + std::to_string(clock) + "] assigned request from " +
+            log("[clock " + to_string(clock) + "] assigned request from " +
                 r.ip_in + " to server " + s->getIP() +
-                " (queue: " + std::to_string(pending.size()) + " remaining)");
+                " (queue: " + to_string(pending.size()) + " remaining)");
         }
     }
 }
@@ -69,8 +72,8 @@ void LoadBalancer::tickServers() {
         s->tick();
         if (was_busy && s->isFree()) {
             total_processed++;
-            log("[clock " + std::to_string(clock) + "] server " + s->getIP() +
-                " completed job (total processed: " + std::to_string(total_processed) + ")");
+            log("[clock " + to_string(clock) + "] server " + s->getIP() +
+                " completed job (total processed: " + to_string(total_processed) + ")");
         }
     }
 }
@@ -82,19 +85,23 @@ void LoadBalancer::checkQueueBalance() {
     if (q < 50 * n && n > 1) {
         removeServer();
         adjust_cooldown = cooldown_period;
-        log("[clock " + std::to_string(clock) + "] queue low (size " + std::to_string(q) +
-            "), removed server (servers: " + std::to_string(servers.size()) + ")");
+        cout << YELLOW << "[LB-" << job_type << "] queue low (" << q
+             << "), removed a server (now " << servers.size() << " servers)" << RESET << "\n";
+        log("[clock " + to_string(clock) + "] queue low (size " + to_string(q) +
+            "), removed server (servers: " + to_string(servers.size()) + ")");
     } else if (q > 80 * n) {
         addServer();
         adjust_cooldown = cooldown_period;
-        log("[clock " + std::to_string(clock) + "] queue high (size " + std::to_string(q) +
-            "), added server (servers: " + std::to_string(servers.size()) + ")");
+        cout << RED << "[LB-" << job_type << "] queue high (" << q
+             << "), added a server (now " << servers.size() << " servers)" << RESET << "\n";
+        log("[clock " + to_string(clock) + "] queue high (size " + to_string(q) +
+            "), added server (servers: " + to_string(servers.size()) + ")");
     }
 }
 
 void LoadBalancer::addServer() {
     servers.push_back(new WebServer(randomIP()));
-    max_servers_seen = std::max(max_servers_seen, (int)servers.size());
+    max_servers_seen = max(max_servers_seen, (int)servers.size());
 }
 
 void LoadBalancer::removeServer() {
@@ -102,24 +109,23 @@ void LoadBalancer::removeServer() {
         if (servers[i]->isFree()) {
             delete servers[i];
             servers.erase(servers.begin() + i);
-            min_servers_seen = std::min(min_servers_seen, (int)servers.size());
+            min_servers_seen = min(min_servers_seen, (int)servers.size());
             return;
         }
     }
-    // all servers busy, skip removal this cycle
 }
 
-void LoadBalancer::log(const std::string& msg) {
+void LoadBalancer::log(const string& msg) {
     if (log_file.is_open()) {
         log_file << msg << "\n";
     }
 }
 
-std::string LoadBalancer::randomIP() {
-    return std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256) + "." +
-           std::to_string(rand() % 256);
+string LoadBalancer::randomIP() {
+    return to_string(rand() % 256) + "." +
+           to_string(rand() % 256) + "." +
+           to_string(rand() % 256) + "." +
+           to_string(rand() % 256);
 }
 
 int LoadBalancer::serverCount() const {
@@ -131,10 +137,10 @@ int LoadBalancer::queueSize() const {
 }
 
 void LoadBalancer::printSummary() {
-    std::cout << "--- load balancer [" << job_type << "] summary ---\n";
-    std::cout << "total requests processed: " << total_processed << "\n";
-    std::cout << "min servers used: " << min_servers_seen << "\n";
-    std::cout << "max servers used: " << max_servers_seen << "\n";
-    std::cout << "final queue size: " << pending.size() << "\n";
-    std::cout << "clock cycles run: " << clock << "\n";
+    cout << CYAN << "--- load balancer [" << job_type << "] summary ---" << RESET << "\n";
+    cout << "total requests processed: " << total_processed << "\n";
+    cout << "min servers used:         " << min_servers_seen << "\n";
+    cout << "max servers used:         " << max_servers_seen << "\n";
+    cout << "final queue size:         " << pending.size() << "\n";
+    cout << "clock cycles run:         " << clock << "\n";
 }

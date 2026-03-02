@@ -4,14 +4,18 @@
 #ifndef HIGH_LEVEL_LOAD_BALANCER_H
 #define HIGH_LEVEL_LOAD_BALANCER_H
 
+#include <vector>
+#include <string>
 #include "load_balancer.h"
 #include "request_generator.h"
+
+using namespace std;
 
 /// @brief routes incoming requests to the appropriate load balancer based on job type
 class HighLevelLoadBalancer {
 public:
-    /// @brief constructs the high level load balancer with separate server counts per job type
-    HighLevelLoadBalancer(int p_servers, int s_servers, int cooldown_n);
+    /// @brief constructs the high level load balancer with server counts and a blocked ip list
+    HighLevelLoadBalancer(int p_servers, int s_servers, int cooldown_n, vector<string> blocked);
 
     /// @brief destructor that cleans up both load balancers
     ~HighLevelLoadBalancer();
@@ -26,8 +30,10 @@ public:
     void printSummary();
 
 private:
-    LoadBalancer* p_lb; ///< load balancer that handles processing jobs
-    LoadBalancer* s_lb; ///< load balancer that handles streaming jobs
+    LoadBalancer* p_lb;          ///< load balancer that handles processing jobs
+    LoadBalancer* s_lb;          ///< load balancer that handles streaming jobs
+    vector<string> blocked_prefixes; ///< ip prefixes that are blocked by the firewall
+    int total_blocked;           ///< total number of requests blocked during the run
 };
 
 #endif

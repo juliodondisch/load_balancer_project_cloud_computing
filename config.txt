@@ -1,0 +1,11 @@
+cooldown_period=20
+
+min_request_time=1
+max_request_time=20
+
+new_request_probability=30
+
+max_new_per_cycle=3
+
+
+blocked_ips=10.,172.16

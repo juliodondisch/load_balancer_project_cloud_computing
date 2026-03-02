@@ -11,6 +11,8 @@
 #include "request_generator.h"
 #include "webserver.h"
 
+using namespace std;
+
 /// @brief manages a pool of web servers and a queue of pending requests for one job type
 class LoadBalancer {
 public:
@@ -36,17 +38,17 @@ public:
     int queueSize() const;
 
 private:
-    char job_type;                  ///< 'P' or 'S', the job type this lb handles
-    std::queue<Request> pending;    ///< queue of requests waiting for a server
-    std::vector<WebServer*> servers;///< all servers, both busy and free
-    int clock;                      ///< current clock cycle
-    int adjust_cooldown;            ///< cycles remaining before next scaling check
-    int cooldown_period;            ///< cycles to wait between scaling actions
-    std::ofstream log_file;         ///< log file for this load balancer
+    char job_type;             ///< 'P' or 'S', the job type this lb handles
+    queue<Request> pending;    ///< queue of requests waiting for a server
+    vector<WebServer*> servers;///< all servers, both busy and free
+    int clock;                 ///< current clock cycle
+    int adjust_cooldown;       ///< cycles remaining before next scaling check
+    int cooldown_period;       ///< cycles to wait between scaling actions
+    ofstream log_file;         ///< log file for this load balancer
 
-    int total_processed;            ///< total requests completed during the run
-    int min_servers_seen;           ///< lowest server count seen during the run
-    int max_servers_seen;           ///< highest server count seen during the run
+    int total_processed;       ///< total requests completed during the run
+    int min_servers_seen;      ///< lowest server count seen during the run
+    int max_servers_seen;      ///< highest server count seen during the run
 
     /// @brief assigns pending requests to any free servers
     void assignJobs();
@@ -64,10 +66,10 @@ private:
     void removeServer();
 
     /// @brief writes a message to the log file
-    void log(const std::string& msg);
+    void log(const string& msg);
 
     /// @brief generates a random dotted-decimal ip address
-    std::string randomIP();
+    string randomIP();
 };
 
 #endif

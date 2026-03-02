@@ -3,7 +3,9 @@
 
 #include "webserver.h"
 
-WebServer::WebServer(std::string ip)
+using namespace std;
+
+WebServer::WebServer(string ip)
     : ip(ip), busy(false), time_remaining(0) {
     current_request = {"", "", 0, ' '};
 }
@@ -27,7 +29,7 @@ bool WebServer::isFree() const {
     return !busy;
 }
 
-std::string WebServer::getIP() const {
+string WebServer::getIP() const {
     return ip;
 }
 
