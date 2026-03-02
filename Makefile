@@ -11,4 +11,4 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -c $<
 
 clean:
-	rm -f $(OBJS) $(TARGET) *.txt
+	rm -f $(OBJS) $(TARGET)
