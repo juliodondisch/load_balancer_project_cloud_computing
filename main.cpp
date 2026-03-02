@@ -44,6 +44,7 @@ vector<string> splitCSV(const string& s) {
     return tokens;
 }
 
+/// @brief sets up the simulation from config and user input then runs the clock loop
 int main() {
     map<string, string> cfg = readConfig("config.txt");
 
